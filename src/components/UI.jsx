@@ -33,6 +33,17 @@ pages.push({
   back: "book-back",
 });
 
+// Page names mapping
+export const pageNames = [
+  "Cover",
+  "About Me",
+  "Projects",
+  "Incomplete.",
+  "Inconsistency.",
+  "Undecided.",
+  "Back Cover",
+];
+
 const AnimatedSpadeacePattern = () => {
   const [visibleCards, setVisibleCards] = useState(new Set());
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -66,22 +77,20 @@ const AnimatedSpadeacePattern = () => {
 
     const interval = setInterval(() => {
       setVisibleCards((prev) => {
-        const newVisible = new Set(prev);
-        // Randomly select 20-40% of cards to toggle
-        const toggleCount = Math.floor(totalCards * (0.2 + Math.random() * 0.2));
-        const cardsToToggle = new Set();
+        // Target 20-30% of cards to be visible (70-80% will be hidden)
+        const targetVisiblePercentage = 0.3 + Math.random() * 0.1; // 20-30%
+        const targetVisibleCount = Math.floor(totalCards * targetVisiblePercentage);
         
-        while (cardsToToggle.size < toggleCount) {
-          cardsToToggle.add(Math.floor(Math.random() * totalCards));
+        // Randomly select which cards should be visible
+        const newVisible = new Set();
+        const availableIndices = Array.from({ length: totalCards }, (_, i) => i);
+        
+        // Shuffle and pick random cards to be visible
+        for (let i = 0; i < targetVisibleCount; i++) {
+          const randomIndex = Math.floor(Math.random() * availableIndices.length);
+          const cardIndex = availableIndices.splice(randomIndex, 1)[0];
+          newVisible.add(cardIndex);
         }
-
-        cardsToToggle.forEach((index) => {
-          if (newVisible.has(index)) {
-            newVisible.delete(index);
-          } else {
-            newVisible.add(index);
-          }
-        });
 
         return newVisible;
       });
@@ -138,30 +147,62 @@ export const UI = () => {
     <>
       <AnimatedSpadeacePattern />
       <main className=" pointer-events-none select-none z-10 fixed  inset-0  flex justify-between flex-col">
-        <div className="w-full overflow-auto pointer-events-auto flex justify-center">
+        {/* Desktop: Vertical navigation on left center - responsive positioning */}
+        <div 
+          className="hidden md:flex items-center pointer-events-auto fixed top-1/2 -translate-y-1/2"
+          style={{ left: 'clamp(1rem, 4vw, 4rem)' }}
+        >
+          <div className="flex flex-col items-start gap-2">
+            {[...pages].map((_, index) => (
+              <button
+                key={index}
+                className={`border-transparent hover:border-white transition-all duration-300  px-1.5 py-1 rounded-full  text-sm uppercase shrink-0 border ${
+                  index === page
+                    ? "bg-white/90 text-gray-900"
+                    : "bg-black/30 text-white"
+                }`}
+                onClick={() => setPage(index)}
+              >
+                {pageNames[index]}
+              </button>
+            ))}
+            <button
+              className={`border-transparent hover:border-white transition-all duration-300  px-1.5 py-1 rounded-full  text-sm uppercase shrink-0 border ${
+                page === pages.length
+                  ? "bg-white/90 text-gray-900"
+                  : "bg-black/30 text-white"
+              }`}
+              onClick={() => setPage(pages.length)}
+            >
+              {pageNames[pages.length]}
+            </button>
+          </div>
+        </div>
+        {/* Mobile: Horizontal navigation at top */}
+        <div className="md:hidden w-full overflow-auto pointer-events-auto flex justify-center">
           <div className="overflow-auto flex items-center gap-1 max-w-full p-10">
             {[...pages].map((_, index) => (
               <button
                 key={index}
                 className={`border-transparent hover:border-white transition-all duration-300  px-1.5 py-1 rounded-full  text-sm uppercase shrink-0 border ${
                   index === page
-                    ? "bg-white/90 text-black"
+                    ? "bg-white/90 text-gray-900"
                     : "bg-black/30 text-white"
                 }`}
                 onClick={() => setPage(index)}
               >
-                {index === 0 ? "Cover" : `Page ${index}`}
+                {pageNames[index]}
               </button>
             ))}
             <button
               className={`border-transparent hover:border-white transition-all duration-300  px-1.5 py-1 rounded-full  text-sm uppercase shrink-0 border ${
                 page === pages.length
-                  ? "bg-white/90 text-black"
+                  ? "bg-white/90 text-gray-900"
                   : "bg-black/30 text-white"
               }`}
               onClick={() => setPage(pages.length)}
             >
-              Back Cover
+              {pageNames[pages.length]}
             </button>
           </div>
         </div>
