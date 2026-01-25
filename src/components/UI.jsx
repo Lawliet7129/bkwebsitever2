@@ -15,6 +15,7 @@ const pictures = [
 ];
 
 export const pageAtom = atom(0);
+export const showAboutMeAtom = atom(false);
 export const pages = [
   {
     front: "book-cover",
@@ -137,10 +138,23 @@ const AnimatedSpadeacePattern = () => {
 
 export const UI = () => {
   const [page, setPage] = useAtom(pageAtom);
+  const [showAboutMe, setShowAboutMe] = useAtom(showAboutMeAtom);
+  
+  // Debug: log showAboutMe changes
+  useEffect(() => {
+    console.log('🔘 UI: showAboutMe changed to:', showAboutMe);
+  }, [showAboutMe]);
 
   useEffect(() => {
     const audio = new Audio("/audios/page-flip-01a.mp3");
-    audio.play();
+    // Only play audio after user interaction
+    const playAudio = () => {
+      audio.play().catch(() => {
+        // Ignore autoplay errors
+      });
+    };
+    // Try to play, but don't throw error if it fails
+    playAudio();
   }, [page]);
 
   return (
@@ -161,7 +175,12 @@ export const UI = () => {
                     ? "bg-white/90 text-gray-900"
                     : "bg-black/30 text-white"
                 }`}
-                onClick={() => setPage(index)}
+                onClick={() => {
+                  setPage(index);
+                  // Only show About Me when clicking the About Me button (index 1)
+                  // Hide About Me when navigating to other pages
+                  setShowAboutMe(index === 1);
+                }}
               >
                 {pageNames[index]}
               </button>
@@ -172,7 +191,10 @@ export const UI = () => {
                   ? "bg-white/90 text-gray-900"
                   : "bg-black/30 text-white"
               }`}
-              onClick={() => setPage(pages.length)}
+              onClick={() => {
+                setPage(pages.length);
+                setShowAboutMe(false);
+              }}
             >
               {pageNames[pages.length]}
             </button>
@@ -189,7 +211,20 @@ export const UI = () => {
                     ? "bg-white/90 text-gray-900"
                     : "bg-black/30 text-white"
                 }`}
-                onClick={() => setPage(index)}
+                onClick={() => {
+                  console.log('🔘 Button clicked - index:', index, 'pageNames[index]:', pageNames[index]);
+                  setPage(index);
+                  // Only show About Me when clicking the About Me button (index 1)
+                  // Hide About Me when navigating to other pages
+                  // This shows poker cards in 3D scene, does NOT navigate to /about
+                  const shouldShowAboutMe = index === 1;
+                  console.log('🔘 Setting showAboutMe to:', shouldShowAboutMe);
+                  setShowAboutMe(shouldShowAboutMe);
+                  // Verify it was set
+                  setTimeout(() => {
+                    console.log('🔘 After setting, showAboutMe should be:', shouldShowAboutMe);
+                  }, 100);
+                }}
               >
                 {pageNames[index]}
               </button>
@@ -200,7 +235,10 @@ export const UI = () => {
                   ? "bg-white/90 text-gray-900"
                   : "bg-black/30 text-white"
               }`}
-              onClick={() => setPage(pages.length)}
+              onClick={() => {
+                setPage(pages.length);
+                setShowAboutMe(false);
+              }}
             >
               {pageNames[pages.length]}
             </button>

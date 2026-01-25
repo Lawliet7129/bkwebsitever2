@@ -3,6 +3,8 @@
 /* Neue Montreal Font - Pangram Pangram Foundry */
 /* Add your Neue Montreal font files to public/fonts/ directory */
 /* You can download the font from: https://pangrampangram.com/products/neue-montreal */
+/* Font-face declarations commented out until font files are added to public/fonts/ */
+/* 
 @font-face {
   font-family: 'Neue Montreal';
   src: url('/fonts/NeueMontreal-Regular.woff2') format('woff2'),
@@ -32,6 +34,7 @@
   font-style: normal;
   font-display: swap;
 }
+*/
 
 @tailwind base;
 @tailwind components;
